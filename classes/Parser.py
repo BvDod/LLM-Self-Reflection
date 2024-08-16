@@ -1,5 +1,6 @@
 import json
 import os.path
+import random
 
 
 
@@ -27,8 +28,12 @@ class ProblemParser():
         return data
     
 
-    def getPrompts(self) -> list[str]:
+    def getPrompts(self, randomAmount = 0) -> list[str]:
         """ Return List of all prompts in the parsed JSONl """
+        
+        # Take random subSample of total prompts
+        if randomAmount and randomAmount < len(self.problems):
+            self.problems = random.sample(self.problems, randomAmount)
         
         return [problem["prompt"] for problem in self.problems]
 
@@ -57,11 +62,16 @@ class ProblemParser():
 
     def getOutputName(self) -> str:
         "Get name to output to, make sure it doesnt exist yet"
-        i = 0
+        
+        
+        i = 0 # Increment filename untill valid
         output_name = self.file_name[:-6] + f"_output_{i}" + ".jsonl"
         while os.path.isfile(output_name):
             i += 1
-            output_name = self.file_name[:-6] + f"output_{i}" + ".jsonl"
+            output_name = self.file_name[:-6] + f"_output_{i}" + ".jsonl"
+        
+        folder_index = -(output_name[::-1].find("/") + 1)
+        output_name = output_name[:folder_index] + "/output/" + output_name[folder_index+1:]
         return output_name
 
 
