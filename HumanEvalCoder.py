@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser = ProblemParser("./data/human-eval-v2-20210705.jsonl")
 
     # Only get prompts for each problem
-    prompts = parser.getPrompts(randomAmount=10)
+    prompts = parser.getPrompts()
 
     # Generate LLM responses
     llm_responses = []
@@ -21,8 +21,8 @@ if __name__ == "__main__":
         response = codeBot.invokePrompt(prompt, stripDef=True)
         llm_responses.append(response)
         print(f"Prompt {i}/{len(prompts)}")
-        print(f"Prompt: {prompt.strip("\n")}\nResult: {response}\n")
+        print(f"Prompt:\n {prompt.strip("\n")}\nResult:\n {response}\n")
     
-    # Save responses to expexted JSONL file
+    # Save responses to expected JSONL file
     parser.saveResponses(llm_responses)
     

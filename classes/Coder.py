@@ -6,6 +6,12 @@ class Coder():
     """Class which defines the LLM and Coding Bot"""
 
     def __init__(self, model_name="llama3.1", usePrompt=False):
+        
+        self.settings = {
+            model_name : "llama3.1",
+        }
+        
+        
         self.llm = Ollama(model=model_name)
         self.usePrompt = usePrompt
 
@@ -30,7 +36,20 @@ class Coder():
             response = stripDefFunction(response)
         return response
 
+
+
 def stripDefFunction(code: str) -> str:
+    
+    # Borrow from: https://github.com/FSoft-AI4Code/CodeCapybara
+    # "pad to four space to avoid `unindent` error"
+    def pad_spaces(s, num=4):
+        n = 0
+        while n < len(s) and s[n] == " ":
+            n += 1
+        if n != num:
+            s = " " * num + s[n:]
+        return s
+
     """If a function starts like "def function1:", strips that """
     line_start_def = code.find("\ndef ")
     index = code[line_start_def+2:].find("\n")
@@ -38,6 +57,8 @@ def stripDefFunction(code: str) -> str:
 
     if code[-4:] == "\n```":
         code = code[:-4]
+    
+    code = pad_spaces(code, 4)
     return code
 
 

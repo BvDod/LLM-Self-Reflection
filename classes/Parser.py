@@ -8,12 +8,20 @@ class ProblemParser():
     """ Class which handles the parsing of the HumanEval JSONL, and
     the dumping of answers to a JSONL """
 
-    def __init__(self, file: str):
-        self.file_name = file
-        self.problems = self.readJsonLines(file) # List of dict of each problem
+    def __init__(self, file: str, randomSampleN: int = None):
+        self.settings = {
+            "randomSampleN": randomSampleN,
+            "filename_in": file,
+            "filename_out": None
+            }
+        
+        
+        # List of dict of each problem, randomSample if configured
+        self.problems = self.readJsonLines(file, randomSampleN)
+        
 
 
-    def readJsonLines(self, file: str) -> list[dict]:
+    def readJsonLines(self, file: str, randomSampleN: int = None) -> list[dict]:
         """ Reads JSONL with all problems and return as list of dict"""
 
         if not os.path.isfile(file):
@@ -25,15 +33,15 @@ class ProblemParser():
         
         with open(file) as f:
             data = [json.loads(line) for line in f]
+
+        # Take subsample if configured
+        if randomSampleN and randomSampleN < len(self.problems):
+            self.problems = random.sample(self.problems, randomSampleN)
         return data
     
 
     def getPrompts(self, randomAmount = 0) -> list[str]:
         """ Return List of all prompts in the parsed JSONl """
-        
-        # Take random subSample of total prompts
-        if randomAmount and randomAmount < len(self.problems):
-            self.problems = random.sample(self.problems, randomAmount)
         
         return [problem["prompt"] for problem in self.problems]
 
@@ -58,6 +66,7 @@ class ProblemParser():
             for entry in output:
                 json.dump(entry, outfile)
                 outfile.write('\n')
+        self.settings["filename_out"] = filename
 
 
     def getOutputName(self) -> str:
@@ -65,10 +74,10 @@ class ProblemParser():
         
         
         i = 0 # Increment filename untill valid
-        output_name = self.file_name[:-6] + f"_output_{i}" + ".jsonl"
+        output_name = self.settings["filename_in"][:-6] + f"_output_{i}" + ".jsonl"
         while os.path.isfile(output_name):
             i += 1
-            output_name = self.file_name[:-6] + f"_output_{i}" + ".jsonl"
+            output_name = self.settings["filename_in"][:-6] + f"_output_{i}" + ".jsonl"
         
         folder_index = -(output_name[::-1].find("/") + 1)
         output_name = output_name[:folder_index] + "/output/" + output_name[folder_index+1:]
