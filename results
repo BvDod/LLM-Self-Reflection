@@ -1,0 +1,1 @@
+{'model_name': 'llama3.1', 'passAtK': 1}, {'filename_in': './data/example_problem.jsonl', 'filename_out': 'data/output/llama3.1/n=1/passAt1/example_problem_output.jsonl', 'n': 1}: {'pass@1': 0.0}

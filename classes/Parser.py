@@ -1,6 +1,8 @@
 import json
 import os.path
 import random
+from pathlib import Path
+import shutil
 
 
 
@@ -8,13 +10,13 @@ class ProblemParser():
     """ Class which handles the parsing of the HumanEval JSONL, and
     the dumping of answers to a JSONL """
 
-    def __init__(self, file: str, randomSampleN: int = None):
+    def __init__(self, file: str, LLM_settings: dict, randomSampleN: int = None):
         self.settings = {
-            "randomSampleN": randomSampleN,
             "filename_in": file,
-            "filename_out": None
+            "filename_out": None,   # set when file_name_in read
+            "n": None,              # total amount of problems parsed
             }
-        
+        self.LLM_settings = LLM_settings
         
         # List of dict of each problem, randomSample if configured
         self.problems = self.readJsonLines(file, randomSampleN)
@@ -34,9 +36,11 @@ class ProblemParser():
         with open(file) as f:
             data = [json.loads(line) for line in f]
 
+        self.problems = data
         # Take subsample if configured
         if randomSampleN and randomSampleN < len(self.problems):
             self.problems = random.sample(self.problems, randomSampleN)
+        self.settings["n"] = len(self.problems)
         return data
     
 
@@ -61,27 +65,39 @@ class ProblemParser():
             output.append(JsonLine)    
         
         # Write to unique JSONL file
-        filename = self.getOutputName()
-        with open(filename, 'w') as outfile:
+        folder_name = self.getOutputFolderName()
+        file_name_out = folder_name + self.getOutputFilename()
+
+        Path(folder_name).mkdir(parents=True, exist_ok=True)
+        with open(file_name_out, 'w') as outfile:
             for entry in output:
                 json.dump(entry, outfile)
                 outfile.write('\n')
-        self.settings["filename_out"] = filename
+        self.settings["filename_out"] = file_name_out
+
+        # Copy in_file to same dir
+        shutil.copy(self.settings["filename_in"], self.getOutputFolderName())
 
 
-    def getOutputName(self) -> str:
+    def getOutputFilename(self) -> str:
         "Get name to output to, make sure it doesnt exist yet"
         
-        
-        i = 0 # Increment filename untill valid
-        output_name = self.settings["filename_in"][:-6] + f"_output_{i}" + ".jsonl"
-        while os.path.isfile(output_name):
-            i += 1
-            output_name = self.settings["filename_in"][:-6] + f"_output_{i}" + ".jsonl"
-        
+        output_name = self.settings["filename_in"][:-6] + f"_output" + ".jsonl"
         folder_index = -(output_name[::-1].find("/") + 1)
-        output_name = output_name[:folder_index] + "/output/" + output_name[folder_index+1:]
+        output_name = output_name[folder_index+1:]
+
         return output_name
+
+
+    def getOutputFolderName(self) -> str:
+        "Get folder to output to, based on LLM settings"
+        model = self.LLM_settings["model_name"]
+        passAtK = self.LLM_settings["passAtK"]
+        samples = self.settings["n"]
+        return f"data/output/{model}/n={samples}/passAt{passAtK}/"
+        
+
+        
 
 
         

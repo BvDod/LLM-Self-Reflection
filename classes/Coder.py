@@ -5,15 +5,17 @@ from langchain_core.prompts import ChatPromptTemplate
 class Coder():
     """Class which defines the LLM and Coding Bot"""
 
-    def __init__(self, model_name="llama3.1", usePrompt=False):
+    def __init__(self, model_name="llama3.1", passAtK=1, usePrompt=False, printSamples=False):
         
         self.settings = {
-            model_name : "llama3.1",
+            "model_name" : model_name,
+            "passAtK": passAtK
         }
         
-        
         self.llm = Ollama(model=model_name)
-        self.usePrompt = usePrompt
+        self.usePrompt = usePrompt\
+        
+        self.printSamples = printSamples
 
         self.prompt = ChatPromptTemplate.from_messages([
         ("system", "You are trying to create Python 3 functions that both run and perform the correct action. You are given the name of a function. You are required to return the code that should be a function with that name. Only return the code"),
@@ -34,6 +36,9 @@ class Coder():
 
         if stripDef:
             response = stripDefFunction(response)
+        
+        if self.printSamples:
+            print(f"Prompt:\n {prompt.strip("\n")}\nResult:\n {response}\n")
         return response
 
 
