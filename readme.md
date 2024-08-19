@@ -3,8 +3,10 @@ This project demonstrates and implements self-selection and self-critique when g
 
 
 ## Self-Selection
+![llm](https://github.com/user-attachments/assets/cbc6ec86-1e32-4483-a322-2a5045a50aad)
 
 ## Self-Critique
+![llm2](https://github.com/user-attachments/assets/7e8bcab1-c207-47ea-af4d-6e2974fd59cf)
 
 ## Output Samples
 
