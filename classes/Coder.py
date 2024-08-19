@@ -5,11 +5,10 @@ from langchain_core.prompts import ChatPromptTemplate
 class Coder():
     """Class which defines the LLM and Coding Bot"""
 
-    def __init__(self, model_name="llama3.1", passAtK=1, usePrompt=False, printSamples=False):
+    def __init__(self, model_name="llama3.1", usePrompt=False, printSamples=False):
         
         self.settings = {
             "model_name" : model_name,
-            "passAtK": passAtK
         }
         
         self.llm = Ollama(model=model_name)
@@ -35,7 +34,7 @@ class Coder():
             response = self.chain.invoke(prompt)
 
         if stripDef:
-            response = stripDefFunction(response)
+            response = cleanCodeFormatting(response)
         
         if self.printSamples:
             print(f"Prompt:\n {prompt.strip("\n")}\nResult:\n {response}\n")
@@ -43,7 +42,8 @@ class Coder():
 
 
 
-def stripDefFunction(code: str) -> str:
+def cleanCodeFormatting(code: str) -> str:
+    """Strips everything before def function: AND changes TABS to spaces """
     
     # Borrow from: https://github.com/FSoft-AI4Code/CodeCapybara
     # "pad to four space to avoid `unindent` error"
@@ -55,7 +55,6 @@ def stripDefFunction(code: str) -> str:
             s = " " * num + s[n:]
         return s
 
-    """If a function starts like "def function1:", strips that """
     line_start_def = code.find("\ndef ")
     index = code[line_start_def+2:].find("\n")
     code = code[line_start_def+index+4:]

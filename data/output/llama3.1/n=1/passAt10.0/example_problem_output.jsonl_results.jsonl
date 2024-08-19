@@ -1,0 +1,10 @@
+{"task_id": "test/0", "completion": "    return 1", "result": "passed", "passed": true}
+{"task_id": "test/0", "completion": "    return 1", "result": "passed", "passed": true}
+{"task_id": "test/0", "completion": "    return 1", "result": "passed", "passed": true}
+{"task_id": "test/0", "completion": "    return 1", "result": "passed", "passed": true}
+{"task_id": "test/0", "completion": "    return \"Function definition for return2() was requested, but not provided\"", "result": "failed: ", "passed": false}
+{"task_id": "test/0", "completion": "    pass", "result": "failed: ", "passed": false}
+{"task_id": "test/0", "completion": "    return 1", "result": "passed", "passed": true}
+{"task_id": "test/0", "completion": "    return 1", "result": "passed", "passed": true}
+{"task_id": "test/0", "completion": "    print(\"Function 'return1' executed.\")", "result": "failed: ", "passed": false}
+{"task_id": "test/0", "completion": "    return 1", "result": "passed", "passed": true}

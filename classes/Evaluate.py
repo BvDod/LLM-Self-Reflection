@@ -4,10 +4,12 @@ from humanEval.evaluation import evaluateFunctionalCorrectness
 def evaluate(
     sample_file: str,
     problem_file: str,
-    k: str = "1,10,100",
+    k: str = [1,3,10],
     n_workers: int = 4,
     timeout: float = 3.0,):
-    result = evaluateFunctionalCorrectness(sample_file=sample_file, problem_file=problem_file)
+    """ This function is used to acces the HumanEval frameworks evaluation function"""
+
+    result = evaluateFunctionalCorrectness(sample_file=sample_file, problem_file=problem_file, k=k)
     return result
 
 

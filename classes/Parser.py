@@ -22,7 +22,6 @@ class ProblemParser():
         self.problems = self.readJsonLines(file, randomSampleN)
         
 
-
     def readJsonLines(self, file: str, randomSampleN: int = None) -> list[dict]:
         """ Reads JSONL with all problems and return as list of dict"""
 
@@ -44,28 +43,26 @@ class ProblemParser():
         return data
     
 
-    def getPrompts(self, randomAmount = 0) -> list[str]:
-        """ Return List of all prompts in the parsed JSONl """
+    def getProblems(self, randomAmount = 0) -> list[str]:
+        """ Return List of all (task, prompt) pairs in the parsed JSONl """
         
-        return [problem["prompt"] for problem in self.problems]
+        return [(problem["task_id"], problem["prompt"]) for problem in self.problems]
 
 
     def saveResponses(self, responses: list[str]) -> None:
         """ Save responses to output File """
         
-        if not len(responses) == len(self.problems):
-            raise Exception(f"length of parsed problems differs from length of responses ({len(self.problems)} vs {len(responses)})")
-
+        if len(responses) < len(self.problems):
+            raise Exception(f"length of parsed problems bigger than length of responses ({len(self.problems)} vs {len(responses)})")
+        print(f"Parsed problems: {len(self.problems)}, saved samples: {len(responses)})")
 
         output = [] # contains dicts for every JSON line
-        for i, problem in enumerate(self.problems):
-            JsonLine = {}
-            JsonLine["task_id"] = problem["task_id"]
-            JsonLine["completion"] = responses[i]
+        for (task_id, sample) in responses:
+            JsonLine = {"task_id": task_id, "completion": sample}
             output.append(JsonLine)    
         
         # Write to unique JSONL file
-        folder_name = self.getOutputFolderName()
+        folder_name = self.getOutputFolderName(pass_at_k=len(responses)/len(self.problems))
         file_name_out = folder_name + self.getOutputFilename()
 
         Path(folder_name).mkdir(parents=True, exist_ok=True)
@@ -76,7 +73,7 @@ class ProblemParser():
         self.settings["filename_out"] = file_name_out
 
         # Copy in_file to same dir
-        shutil.copy(self.settings["filename_in"], self.getOutputFolderName())
+        shutil.copy(self.settings["filename_in"], self.getOutputFolderName(pass_at_k=len(responses)/len(self.problems)))
 
 
     def getOutputFilename(self) -> str:
@@ -89,12 +86,12 @@ class ProblemParser():
         return output_name
 
 
-    def getOutputFolderName(self) -> str:
+    def getOutputFolderName(self, pass_at_k=1) -> str:
         "Get folder to output to, based on LLM settings"
+        
         model = self.LLM_settings["model_name"]
-        passAtK = self.LLM_settings["passAtK"]
         samples = self.settings["n"]
-        return f"data/output/{model}/n={samples}/passAt{passAtK}/"
+        return f"data/output/{model}/n={samples}/passAt{pass_at_k}/"
         
 
         
