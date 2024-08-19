@@ -7,3 +7,10 @@
 {'model_name': 'llama3.1'}, {'filename_in': 'data/example_problem.jsonl', 'filename_out': 'data/output/llama3.1/n=1/passAt5.0/example_problem_output.jsonl', 'n': 1}: {'pass@1': 0.8} 
 {'model_name': 'llama3.1'}, {'filename_in': 'data/example_problem.jsonl', 'filename_out': 'data/output/llama3.1/n=1/passAt10.0/example_problem_output.jsonl', 'n': 1}: {'pass@1': 0.7999999999999999, 'pass@10': 1.0} 
 {'model_name': 'llama3.1'}, {'filename_in': 'data/example_problem.jsonl', 'filename_out': 'data/output/llama3.1/n=1/passAt10.0/example_problem_output.jsonl', 'n': 1}: {'pass@1': 0.7, 'pass@3': 0.9916666666666667, 'pass@10': 1.0} 
+{'model_name': 'deepseek-coder-v2'}, {'filename_in': 'data/example_problem.jsonl', 'filename_out': 'data/output/deepseek-coder-v2/n=1/passAt10.0/example_problem_output.jsonl', 'n': 1}: {'pass@1': 1.0, 'pass@3': 1.0, 'pass@10': 1.0} 
+{'model_name': 'deepseek-coder-v2'}, {'filename_in': 'data/test10.jsonl', 'filename_out': 'data/output/deepseek-coder-v2/n=11/passAt1.0/test10_output.jsonl', 'n': 11}: {'pass@1': 1.0} 
+{'model_name': 'llama3.1'}, {'filename_in': 'data/example_problem.jsonl', 'filename_out': 'data/output/llama3.1/n=1/passAt3.0/example_problem_output.jsonl', 'n': 1}: {'pass@1': 0.0, 'pass@3': 0.0} 
+{'model_name': 'llama3.1'}, {'filename_in': 'data/test10.jsonl', 'filename_out': 'data/output/llama3.1/n=11/passAt1.0/test10_output.jsonl', 'n': 11}: {'pass@1': 0.7272727272727273} 
+{'model_name': 'llama3.1'}, {'filename_in': 'data/test10.jsonl', 'filename_out': 'data/output/llama3.1/n=11/passAt1.0/test10_output.jsonl', 'n': 11}: {'pass@1': 0.8181818181818182} 
+{'model_name': 'llama3.1'}, {'filename_in': 'data/human-eval-v2-full.jsonl', 'filename_out': 'data/output/llama3.1/n=164/passAt1.0/human-eval-v2-full_output.jsonl', 'n': 164}: {'pass@1': 0.4573170731707317} 
+{'model_name': 'llama3.1'}, {'filename_in': 'data/test10.jsonl', 'filename_out': 'data/output/llama3.1/n=11/passAt10.0/test10_output.jsonl', 'n': 11}: {'pass@1': 0.6818181818181818, 'pass@3': 0.8825757575757577, 'pass@10': 1.0} , runtime: 55m 21s

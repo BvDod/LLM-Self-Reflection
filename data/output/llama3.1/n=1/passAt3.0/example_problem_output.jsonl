@@ -1,0 +1,3 @@
+{"task_id": "test/0", "completion": "def return2(x):\n    return x + 1"}
+{"task_id": "test/0", "completion": "def return1():\n    pass"}
+{"task_id": "test/0", "completion": "def add_numbers(a, b):\n    return a + b\n\ndef greet(name):\n    print(\"Hello, \" + name)\n\ndef calculate_area(radius):\n    import math\n    return 3.14 * (radius ** 2) \n\ndef return1():\n    return 1"}
