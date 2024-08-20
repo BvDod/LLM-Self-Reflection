@@ -6,42 +6,61 @@ import random
 class Coder():
     """Class which defines the LLM and Coding Bot"""
 
-    def __init__(self, model_name="llama3.1", printSamples=False):
+    def __init__(self, model_name="llama3.1", self_selection = True, self_critique = False, printSamples=False):
         
         self.settings = {
             "model_name" : model_name,
+            "self_selection": self_selection,
+            "self_critique": self_critique,
         }
         
         self.llm = Ollama(model=model_name)
         self.printSamples = printSamples
-        self.self_selection = False
 
         self.prompt = ChatPromptTemplate.from_messages([
         ("system", """You are trying to create Python 3 functions that both run and perform the correct action. 
          You are given the name of a function. You are required to return the code that should be a function with
-         that name. Only return the code"""),
+         that name. Do NOT return more than 1 function, and ONLY return the code, also no code outside of the function"""),
         ("user", "{input}")])
 
         # Prompt used for self-selection
         self.selection_prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are given 3 different Python 3 functions, that are supposed to both run and perform the correct action.
+        ("system", f"""You are given 3 different Python 3 functions, that are supposed to both run and perform the correct action.
         Critisize each of the three implementations on why they wouldnt work or perform the correct action, and then select the 
         implementation that is the best. Depending on the best function, ALWAYS end the message in precisely the following format:
         'Selected function: function x', where x is 1, 2 or 3"""),
         ("user", "Function 1: {function1}\n Function 2: {function2}\n Function 3: {function3}")])
 
+        # Prompts used for self-critique
+        self.critique_prompt = ChatPromptTemplate.from_messages([
+        ("system", f"""You are given a Python 3 functions, that is supposed to both run and perform the correct action.
+        You are supposed to give feedback on why the function wouldnt work or perform the correct action."""),
+        ("user", "{function}")])
+        
+        self.resolver_prompt = ChatPromptTemplate.from_messages([
+        ("system", f"""You are given a Python 3 function by the user, that is supposed to both run and perform the correct action.
+        You are also given critique about the function, on why it wouldnt work or perform the correct action. Using the critique, improve the existing code by trying to 
+        incorperate the given feedback. Do NOT return more than 1 function, and ONLY return the code, also no code outside of the function.
+        """),
+        ("user", "{function}"),
+        ("user", "{critique}"),])
+
         self.chain = self.prompt | self.llm 
 
-        if self.self_selection:
+        if self.settings['self_selection']:
             self.selection_chain = self.selection_prompt | self.llm
-
+        if self.settings['self_critique']:
+            self.critique_chain = self.critique_prompt | self.llm
+            self.resolver_chain = self.resolver_prompt | self.llm
+        if self.settings['self_critique'] and self.settings['self_selection']:
+            raise Exception("Only self-critque OR self-selection can be used at the same time")
     
+
     def invokePrompt(self, prompt: str) -> str:
         """ Given a prompt, invokes our Coder and returns response"""
         
         response = self.chain.invoke({"input": prompt})
         return response
-
 
 
     def getsSelfSelectionSample(self, prompt):
@@ -75,20 +94,37 @@ class Coder():
             best_function = random.choice([1,2,3])
        
         return response_candidates[best_function-1]
+    
 
-    def getsSelfReflectionSample(self, prompt):   
-        """Generates code sample, critique using LLM, then rewrite using LLM"""
-
+    def getsSelfCritiqueSample(self, prompt):
+        """todo"""
+        
+        # Generate initial prompt
         response = self.invokePrompt(prompt)
-        critique = self.CRITISIZE(RESPONSE)
-        rewritten = self.REWRITE(reponse, critique)
-
+        
+        if self.printSamples:
+            response_cleaned = cleanCodeFormatting(response)
+            print(f"Function:\n {response_cleaned.strip("\n")}\n")
+        
+        # Asks to critique sample
+        critique_response = self.critique_chain.invoke({"function": response}) 
+                                                            
+        if self.printSamples:
+            print(critique_response)
+        
+        # Asks to critique sample
+        improved_response = self.resolver_chain.invoke({"function": response, "critique": critique_response})
+                                                            
+        return improved_response
+    
     
     def getSample(self, prompt: str, stripDef=False) -> str:
         """Get a cleaned output sample given a prompt using current LLM settings (incl reflection)"""
 
-        if self.self_selection:
+        if self.settings["self_selection"]:
             response = self.getsSelfSelectionSample(prompt)
+        elif self.settings["self_critique"]:
+            response = self.getsSelfCritiqueSample(prompt)
         else:
             response = self.invokePrompt(prompt)
 
@@ -99,7 +135,6 @@ class Coder():
             print(f"Prompt:\n {prompt.strip("\n")}\nResult:\n {response}\n")
 
         return response
-
 
 
 def cleanCodeFormatting(code: str) -> str:

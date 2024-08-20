@@ -1,0 +1,5 @@
+"You are given 3 different Python 3 functions, that are supposed to both run and perform the correct action. Critisize each of the three implementations on why they wouldnt work or perform the correct action, and then select the implementation that is the best. End the message with: 'function 1', 'function 2' or 'function3', which is the function you choose to be the best"
+
+"You are given an implementation of a Python 3 functions, that is supposed to both run and perform the correct action. Critisize the implementations on why it possibly wouldnt work or perform the correct action"
+
+"You are given an implementation of a Python 3 functions, that is supposed to both run and perform the correct action, and a critique of said implementation on why it possibly wouldnt work. Change the original implementation according to the critique."

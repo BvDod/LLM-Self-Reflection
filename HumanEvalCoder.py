@@ -10,9 +10,10 @@ import time
 
 if __name__ == "__main__":
     
+    
     problem_file = "data/test10.jsonl"
     printSamples = True  # Print every single prompt and generated sample
-    model_name = "deepseek-coder-v2" # "llama3.1" or "deepseek-coder-v2"
+    # model_name = "deepseek-coder-v2" # "llama3.1" or "deepseek-coder-v2"
     model_name = "llama3.1"
     passAtK = 10
 
