@@ -11,7 +11,7 @@ import time
 if __name__ == "__main__":
     
     
-    problem_file = "data/test10.jsonl"
+    problem_file = "data/human-eval-v2-full.jsonl"
     printSamples = True  # Print every single prompt and generated sample
     # model_name = "deepseek-coder-v2" # "llama3.1" or "deepseek-coder-v2"
     model_name = "llama3.1"

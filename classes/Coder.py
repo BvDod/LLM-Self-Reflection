@@ -6,7 +6,7 @@ import random
 class Coder():
     """Class which defines the LLM and Coding Bot"""
 
-    def __init__(self, model_name="llama3.1", self_selection = True, self_critique = False, printSamples=False):
+    def __init__(self, model_name="llama3.1", self_selection = False, self_critique = True, printSamples=False):
         
         self.settings = {
             "model_name" : model_name,
