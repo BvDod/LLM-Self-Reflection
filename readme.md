@@ -5,30 +5,31 @@ This project demonstrates and implements **self-selection** and **self-critique*
 ## Self-Selection
 ![llm](https://github.com/user-attachments/assets/cbc6ec86-1e32-4483-a322-2a5045a50aad)
 
-Self-selection is implemented by making the LLM output 3 different outputs for the requested prompt. The 3 outputs are then fed back into the LLM, and the LLM is asked to critisize and select the best of the three generated functions. This selected function is then taken as the final output.
+Self-selection is implemented by making the LLM output 3 different outputs for the requested prompt. The 3 outputs are then fed back into the LLM, and the LLM is asked to critisize and select the best of the three generated functions. This selected function is then taken as the final output. See [this section](#self-selection-output-example) for output examples for self-selection.
 
 ## Self-Critique
 ![llm2](https://github.com/user-attachments/assets/7e8bcab1-c207-47ea-af4d-6e2974fd59cf)
 
-Self-critique is implemented by first making the LLM output a single sample for the requested prompt. In a second prompt, this generated function is fed back into the LLM, and the LLM is asked to critisize the code. In a third and final prompt, the LLM is asked to fix the generated code using the given feedback. This is then used as the final output
+Self-critique is implemented by first making the LLM output a single sample for the requested prompt. In a second prompt, this generated function is fed back into the LLM, and the LLM is asked to critisize the code. In a third and final prompt, the LLM is asked to fix the generated code using the given feedback. This is then used as the final output. See [this section](#self-critique-output-example) for output examples for self-critique.
 
 
 ## Evaluation experiments
 ### LLM model & Pass@K
-First, I compared the popular model llama 3.1 (8b) to a model that has been finetuned on coding tasks: deepseek-coder-v2 (8B).
-![output1](https://github.com/user-attachments/assets/67722b31-9f5b-4189-8d2c-c332995b93df)
+<img src="https://github.com/user-attachments/assets/67722b31-9f5b-4189-8d2c-c332995b93df" width=50% height=50%>
 
-As you can see, there is a rather big difference between pass@1, pass@3, and pass@10. This is a good result for the potential effectivity of self-selection; if multiple samples are generated, there is a lot bigger chance that a correct sample is among them, than if just 1 sample is generated. Interestingly, the difference in performance seems to decrease as the amount of samples increases, and at pass@10, the difference is almost the same.
-![output2](https://github.com/user-attachments/assets/55884eec-f1f5-460c-bee5-1ee48f694720)
+First, I compared the popular model llama 3.1 (8b) to a model that has been finetuned on coding tasks: deepseek-coder-v2 (8B). As you can see, there is a rather big difference between pass@1, pass@3, and pass@10. This is a good result for the potential effectivity of self-selection; if multiple samples are generated, there is a lot bigger chance that a correct sample is among them, than if just 1 sample is generated. Interestingly, the difference in performance seems to decrease as the amount of samples increases, and at pass@10, the difference is almost the same.
 
-### Self-selection
+
+### Self-selection & Self-critique
+<img src="https://github.com/user-attachments/assets/55884eec-f1f5-460c-bee5-1ee48f694720" width=70% height=70%>
+
+
 A slightly higher,but apparent, higher pass@1 was found for when self-selection was used versus when it was not. However, its still a lot lower than the pass@3 without self-reflection. This means that even though the LLM can somewhat select the best option, its still very far from optimally selecting the best option. Even though its clearly not an optimal usage of computational budget, it shows how self-selection can increase performance.
 
-### Self-critique
 Self-critique leads to a much lower score than even the default. This suggests that the step where the code is improved, tends to introduce more errors than it fixes. This does not mean self-critique is useless, just that with THIS llm model, more issues get created than fixed.
 
 ## HumanEval
-
+This project uses the dataset and framework provided in HumanEval (https://github.com/openai/human-eval). Humaneval contains 164 Python programming problems, assessing language comprehension, algorithms, and simple mathematics.
 
 
 
@@ -49,7 +50,7 @@ I would also be interested in giving the LLM additional information in order to 
 
 To me it seems that the combination of regarding this problem as a search-problem, and giving the LLM additional information to repair samples, could amplify the power of each other.
 
-## Self-Reflection: output example
+## Self-Selection: output example
 ### Generated functions
 Function 1:
 ```
@@ -103,4 +104,33 @@ Therefore, the final answer is:
 Selected function: 2
 ```
 
+## Self-Critique: output example
+### Generated function
+```
+has_close_elements(numbers: List[float], threshold: float) -> bool:
+    return len(numbers) != len(set(x for x in numbers if abs(x - m(numbers)) <= threshold or abs(max(numbers) - x) <= threshold))
+```
+### Generated critique
+```
+The provided function is attempting to check if any two numbers in a list are closer than a specified threshold. However, the logic implemented is flawed and may not produce accurate results.
 
+Here's why:
+
+1. The condition `abs(x - min(numbers)) <= threshold` checks if the difference between each number `x` and the minimum value in the list is within the threshold. This will incorrectly identify numbers that are close to each other if both numbers are smaller than or equal to the maximum value, but not necessarily close to the overall spread of numbers.
+
+2. The condition `abs(max(numbers) - x) <= threshold` checks if the difference between each number `x` and the maximum value in the list is within the threshold. This will incorrectly identify numbers that are far apart from each other, as long as both numbers are near the minimum or maximum value of the list.
+
+3. The condition `abs(x - min(numbers)) <= threshold or abs(max(numbers) - x) <= threshold` tries to check for numbers close to each other in two ways: by looking at the difference with the smallest number and the largest number separately. However, this approach does not take into account numbers that are close together but not near the overall minimum or maximum.
+
+To correct these issues, we should iterate over all pairs of numbers in the list to check if their absolute difference is within the threshold. Here's a revised function with correct logic:
+```
+
+### Improved generated funciton
+```
+has_close_elements(numbers: List[float], threshold: float) -> bool:
+    numbers.sort()
+    for i in range(len(numbers) - 1):
+        if numbers[i + 1] - numbers[i] <= threshold:
+            return True
+    return False
+```

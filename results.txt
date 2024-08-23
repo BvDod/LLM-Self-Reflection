@@ -2,8 +2,4 @@
 {'model_name': 'llama3.1', 'self_selection': False, 'self_critique': False}, {'filename_in': 'data/human-eval-v2-full.jsonl', 'filename_out': 'data/output/llama3.1/n=164/passAt10.0/human-eval-v2-full_output.jsonl', 'n': 164}: {'pass@1': 0.5067073170731707, 'pass@3': 0.6851626016260162, 'pass@10': 0.8048780487804879} , runtime: 2h 788m
 {'model_name': 'deepseek-coder-v2', 'self_selection': False, 'self_critique': False}, {'filename_in': 'data/human-eval-v2-full.jsonl', 'filename_out': 'data/output/deepseek-coder-v2/n=164/passAt10.0/human-eval-v2-full_output.jsonl', 'n': 164}: {'pass@1': 0.6847560975609757, 'pass@3': 0.7717479674796748, 'pass@10': 0.8109756097560976} , runtime: 4h 148m
 {'model_name': 'llama3.1', 'self_selection': True, 'self_critique': False}, {'filename_in': 'data/human-eval-v2-full.jsonl', 'filename_out': 'data/output/llama3.1/n=164/passAt10.0/human-eval-v2-full_output.jsonl', 'n': 164}: {'pass@1': 0.5256097560975609, 'pass@3': 0.7132621951219512, 'pass@10': 0.8292682926829268} , runtime: 10h 1538m
-
-{
-    "llama3.1": {'pass@1': 0.5067073170731707, 'pass@3': 0.6851626016260162, 'pass@10': 0.8048780487804879}, 
-    "deepseek-coder-v2": {'pass@1': 0.6847560975609757, 'pass@3': 0.7717479674796748, 'pass@10': 0.8109756097560976}
-}
+{'model_name': 'llama3.1', 'self_selection': False, 'self_critique': True}, {'filename_in': 'data/human-eval-v2-full.jsonl', 'filename_out': 'data/output/llama3.1/n=164/passAt10.0/human-eval-v2-full_output.jsonl', 'n': 164}: {'pass@1': 0.3310975609756098, 'pass@3': 0.5637195121951218, 'pass@10': 0.7682926829268293} , runtime: 10h 674m
