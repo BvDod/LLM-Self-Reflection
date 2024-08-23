@@ -15,12 +15,14 @@ Self-critique is implemented by first making the LLM output a single sample for 
 
 ## Evaluation experiments
 ### LLM model & Pass@K
-First, i compared the popular model llama 3.1 (8b) to a model which has been finetuned on coding tasks: deepseek-coder-v2 (8B).
+First, I compared the popular model llama 3.1 (8b) to a model that has been finetuned on coding tasks: deepseek-coder-v2 (8B).
+![output1](https://github.com/user-attachments/assets/67722b31-9f5b-4189-8d2c-c332995b93df)
 
-As you can see, there is a rather big difference between pass@1, pass@3 and pass@10. This is a good result for the potential effectivity of self-selection; if multiple samples are generated, there is a lot bigger chance that a correct sample is among them, than if just 1 sample is generated. Interestingly, the difference in performance seems to decrease as the amount of samples increases, and at pass@10, the difference is almost the same.
+As you can see, there is a rather big difference between pass@1, pass@3, and pass@10. This is a good result for the potential effectivity of self-selection; if multiple samples are generated, there is a lot bigger chance that a correct sample is among them, than if just 1 sample is generated. Interestingly, the difference in performance seems to decrease as the amount of samples increases, and at pass@10, the difference is almost the same.
+![output2](https://github.com/user-attachments/assets/55884eec-f1f5-460c-bee5-1ee48f694720)
 
 ### Self-selection
-A slightly higher, but clearly apparent, higher pass@1 was found for when self-selection was used versus when it was not. However, its still a lot lower than the pass@3 without self-reflection. This means that even though the LLM can somewhat select the best option, its still very far from optimally selecting the best option. Even though its clearly not an optimal usage of computational budget, it shows how self-selection can increase performance.
+A slightly higher,but apparent, higher pass@1 was found for when self-selection was used versus when it was not. However, its still a lot lower than the pass@3 without self-reflection. This means that even though the LLM can somewhat select the best option, its still very far from optimally selecting the best option. Even though its clearly not an optimal usage of computational budget, it shows how self-selection can increase performance.
 
 ### Self-critique
 Self-critique leads to a much lower score than even the default. This suggests that the step where the code is improved, tends to introduce more errors than it fixes. This does not mean self-critique is useless, just that with THIS llm model, more issues get created than fixed.
