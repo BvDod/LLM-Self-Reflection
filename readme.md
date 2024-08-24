@@ -5,50 +5,49 @@ This project demonstrates and implements **self-selection** and **self-critique*
 ## Self-Selection
 ![llm](https://github.com/user-attachments/assets/cbc6ec86-1e32-4483-a322-2a5045a50aad)
 
-Self-selection is implemented by making the LLM output 3 different outputs for the requested prompt. The 3 outputs are then fed back into the LLM, and the LLM is asked to critisize and select the best of the three generated functions. This selected function is then taken as the final output. See [this section](#self-selection-output-example) for output examples for self-selection.
+Self-selection is implemented by making the LLM output 3 different outputs for the requested prompt. The 3 outputs are then fed back into the LLM, and the LLM is asked to criticize and select the best of the three generated functions. This selected function is then taken as the final output. See [this section](#self-selection-output-example) for output examples for self-selection.
 
 ## Self-Critique
 ![llm2](https://github.com/user-attachments/assets/7e8bcab1-c207-47ea-af4d-6e2974fd59cf)
 
-Self-critique is implemented by first making the LLM output a single sample for the requested prompt. In a second prompt, this generated function is fed back into the LLM, and the LLM is asked to critisize the code. In a third and final prompt, the LLM is asked to fix the generated code using the given feedback. This is then used as the final output. See [this section](#self-critique-output-example) for output examples for self-critique.
+Self-critique is implemented by first making the LLM output a single sample for the requested prompt. In a second prompt, this generated function is fed back into the LLM, and the LLM is asked to criticize the code. In a third and final prompt, the LLM is asked to fix the generated code using the given feedback. This is then used as the final output. See [this section](#self-critique-output-example) for output examples for self-critique.
 
 
 ## Evaluation experiments
+This project uses the dataset and framework provided by HumanEval for evaluation (https://github.com/openai/human-eval). Humaneval contains 164 Python programming problems, assessing language comprehension, algorithms, and simple mathematics. As the evaluation score, we use the fraction of tests passed. We test different values for k in Pass@K. Pass@k is the fraction of tests passed if we generate k different responses, and consider a single pass among those samples a success. An improved estimate for Pass@1 and Pass@3 is used, we use the fraction of any combinations of k samples, where at least 1 sample passes the test.
+
 ### LLM model & Pass@K
 <img src="https://github.com/user-attachments/assets/67722b31-9f5b-4189-8d2c-c332995b93df" width=50% height=50%>
 
-First, I compared the popular model llama 3.1 (8b) to a model that has been finetuned on coding tasks: deepseek-coder-v2 (8B). As you can see, there is a rather big difference between pass@1, pass@3, and pass@10. This is a good result for the potential effectivity of self-selection; if multiple samples are generated, there is a lot bigger chance that a correct sample is among them, than if just 1 sample is generated. Interestingly, the difference in performance seems to decrease as the amount of samples increases, and at pass@10, the difference is almost the same.
+First, I compared the popular model llama 3.1 (8b) to a model finetuned on coding tasks: deepseek-coder-v2 (8B). As you can see, there is a rather big difference between pass@1, pass@3, and pass@10. This is a good result for the potential effectivity of self-selection; if multiple samples are generated, there is a lot bigger chance that a correct sample is among them, than if just 1 sample is generated. Interestingly, the difference in performance seems to decrease as the amount of samples increases, and at pass@10, the difference is almost the same.
 
 
 ### Self-selection & Self-critique
 <img src="https://github.com/user-attachments/assets/55884eec-f1f5-460c-bee5-1ee48f694720" width=70% height=70%>
 
 
-A slightly higher,but apparent, higher pass@1 was found for when self-selection was used versus when it was not. However, its still a lot lower than the pass@3 without self-reflection. This means that even though the LLM can somewhat select the best option, its still very far from optimally selecting the best option. Even though its clearly not an optimal usage of computational budget, it shows how self-selection can increase performance.
+A slightly higher, but apparent, higher pass@1 was found for when self-selection was used versus when it was not. However, it's still a lot lower than the pass@3 without self-reflection. This means that even though the LLM can somewhat select the best option, it's still very far from optimally selecting the best option. Even though its clearly not an optimal usage of the computational budget, it shows how self-selection can increase performance.
 
-Self-critique leads to a much lower score than even the default. This suggests that the step where the code is improved, tends to introduce more errors than it fixes. This does not mean self-critique is useless, just that with THIS llm model, more issues get created than fixed.
-
-## HumanEval
-This project uses the dataset and framework provided in HumanEval (https://github.com/openai/human-eval). Humaneval contains 164 Python programming problems, assessing language comprehension, algorithms, and simple mathematics.
+Self-critique leads to a much lower score than even the default. This suggests that the step where the code is improved tends to introduce more errors than it fixes. This does not mean self-critique is useless, just that with THIS llm model, more issues get created than fixed.
 
 
 
-## Possible/future Improvements
-### Low hanging fruit/optimizations
-- Use different model. Bigger models, and models optimized for coding would perform better. 
-- Humaneval is not the best avaialble evaluation benchmark anymore, but was a relatively small and easy one to experiment with.
-- The prompts used to generate the code are not optimized or sourced from somewhere, they could certainly be optimized and would almost surelt lead to improved performanbce
-- Experiment with temperature. This is an obvious hyperparameter to experiment with. Especially if you use self-reflection, or passAtk > 1. When you sample multiple samples, a lower temperature would be better than if you just generated one sample. The higher the temperature, the more variance in the supplied solutions, and the higher the chance that a succesfull sample is among them.
-- Increase the amount of self-reflected samples from 3 to an higher amount
-- Quite a lot of samples seem to only fail because of failed import: the LLM assumed a library was previosuly imported but wasnt (libraries like math or statistics). I dont think this is 100% fair, and would optimally change the evaluation framework to import some very common libraries on evaluation
+## Possible/Future Improvements
+### Low-hanging fruit/optimizations
+- Use a different model. Bigger models and models optimized for coding would perform better. 
+- Humaneval is not the best available evaluation benchmark anymore, but was a relatively small and easy one to experiment with.
+- The prompts used to generate the code are not optimized or sourced from somewhere, they could certainly be optimized and would almost surely lead to improved performance
+- Experiment with temperature. This is an obvious hyperparameter to experiment with. Especially if you use self-reflection, or passAtk > 1. When you sample multiple samples, a lower temperature would be better than if you just generated one sample. The higher the temperature, the more variance in the supplied solutions, and the higher the chance that a successful sample is among them.
+- Increase the amount of self-reflected samples from 3 to a higher amount
+- Quite a lot of samples seem to only fail because of failed import: the LLM assumed a library was previously imported but wasn't (libraries like math or statistics). I dont think this is 100% fair, and would optimally change the evaluation framework to import some very common libraries on evaluation
 
 ### Iterative self-reflection/critique and/or using tree search
-Both self-relfection and self-improvement can be executed together, and in an iterative fashion. Performing self-improvement in X different ways, and letting the LLM decide, with which sample to continue to work. Performing this iteratveilty essentially turns this into a search problem. Managing and deciding which node to expand in this search tree effectively could potentially result in great results. This could be done with something like a Monte Carlo Search Tree. There is however the question if the LLM is good enough in judging how good code is to make this work.
+Both self-reflection and self-improvement can be executed together and in an iterative fashion. Performing self-improvement in X different ways, and letting the LLM decide, with which sample to continue to work. Performing this iteratively essentially turns this into a search problem. Managing and deciding which node to expand in this search tree effectively could potentially result in great results. This could be done with something like a Monte Carlo Search Tree. There is however the question if the LLM is good enough in judging how good code is to make this work.
 
 ### Supplying LLM more information
-I would also be interested in giving the LLM additional information in order to be a better judge of how good code is. Given our very restricted current use case, where a function is essentially standalone, and its required output is clear, would it be possible to try and run code present in this search tree. Could the llm fabricate test-cases to judge how well it works, could we give error codes returned from trying to run the code back to the llm, could we run the code in a debugger and give the LLM the intermediate values when trying to run the code?
+I would also be interested in giving the LLM additional information in order to be a better judge of how good code is. Given our very restricted current use case, where a function is essentially standalone, and its required output is clear, would it be possible to try and run code present in this search tree? Could the LLM fabricate test-cases to judge how well it works, could we give error codes returned from trying to run the code back to the LLM, could we run the code in a debugger and give the LLM the intermediate values when trying to run the code?
 
-To me it seems that the combination of regarding this problem as a search-problem, and giving the LLM additional information to repair samples, could amplify the power of each other.
+To me it seems that the combination of regarding this problem as a search problem and giving the LLM additional information to repair samples could amplify the power of each other.
 
 ## Self-Selection: output example
 ### Generated functions
@@ -125,7 +124,7 @@ Here's why:
 To correct these issues, we should iterate over all pairs of numbers in the list to check if their absolute difference is within the threshold. Here's a revised function with correct logic:
 ```
 
-### Improved generated funciton
+### Improved generated function
 ```
 has_close_elements(numbers: List[float], threshold: float) -> bool:
     numbers.sort()
