@@ -1,4 +1,4 @@
-# LLM Python-code generation: self-reflection 
+# Large Language Models: Self Reflection during Python Coding
 This project demonstrates and implements **self-selection** and **self-critique** when generating Python code using an LLM, and includes code to easily evaluate performance on the HumanEval evaluation dataset. This project is built using LangGraph and Ollama. Multiple evaluation experiments have been done and are presented on this GitHub page.
 
 
